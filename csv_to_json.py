@@ -4,9 +4,11 @@
 """
 
 import json
+import ast
 
 data_set = dict()
 data_list = list()
+
 
 with open("dataset.csv") as data_file:
 	for line in data_file:
@@ -28,6 +30,7 @@ with open("dataset.csv") as data_file:
 		# add the values to a dictionary
 		temp_dict["Disease"] = key
 		temp_dict["Symptoms"] = temp
+		temp_dict["Response"] = [f"You might have {key}", f"It's possible that you have {key}", f"You might be suffering from {key}"]
 
 		data_list.append(temp_dict)
 data_set["DiseaseSymptom"] = data_list
@@ -35,3 +38,4 @@ data_set["DiseaseSymptom"] = data_list
 json_object = json.loads(json.dumps(data_set))
 json_file = open("dataset.json", "w")
 json_file.write(str(json_object))
+
