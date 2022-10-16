@@ -15,6 +15,7 @@ import tensorflow
 import random
 import json
 
+from hospitals_data import disease_facility
 from nltk.stem.lancaster import LancasterStemmer
 stemmer = LancasterStemmer()
 
@@ -83,9 +84,10 @@ net = tflearn.regression(net)
 
 model = tflearn.DNN(net)
 
-# model.fit(training, output, n_epoch=1000, batch_size=8, show_metric=True)
+# model.fit(training, output, n_epoch=10000, batch_size=8, show_metric=True)
 # model.save("model.tflearn")
-model.load("model.tflearn") 
+model.load("model.tflearn")
+
 def bag_of_words(s, words):
     bag = [0 for _ in range(len(words))]
 
@@ -99,7 +101,6 @@ def bag_of_words(s, words):
             
     return numpy.array(bag)
 
-
 def chat():
     print("Hi! State your symptoms please (type quit to stop)!")
     while True:
@@ -110,11 +111,18 @@ def chat():
         results = model.predict([bag_of_words(inp, words)])
         results_index = numpy.argmax(results)
         tag = labels[results_index]
-
+        centre_recommendation = ""
         for tg in data["DiseaseSymptom"]:
             if tg['Disease'] == tag:
                 responses = tg['Response']
 
+        for centre, diseases in disease_facility.items():
+            if tag in diseases:
+                centre_recommendation = centre
+                break
+
         print(random.choice(responses))
+        if centre_recommendation != "":
+            print(f"The facility we are recommending for you is {centre_recommendation}")
 
 chat()
