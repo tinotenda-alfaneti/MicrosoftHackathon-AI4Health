@@ -101,28 +101,3 @@ def bag_of_words(s, words):
             
     return numpy.array(bag)
 
-def chat():
-    print("Hi! State your symptoms please (type quit to stop)!")
-    while True:
-        inp = input("You: ")
-        if inp.lower() == "quit":
-            break
-
-        results = model.predict([bag_of_words(inp, words)])
-        results_index = numpy.argmax(results)
-        tag = labels[results_index]
-        centre_recommendation = ""
-        for tg in data["DiseaseSymptom"]:
-            if tg['Disease'] == tag:
-                responses = tg['Response']
-
-        for centre, diseases in disease_facility.items():
-            if tag in diseases:
-                centre_recommendation = centre
-                break
-
-        print(random.choice(responses))
-        if centre_recommendation != "":
-            print(f"The facility we are recommending for you is {centre_recommendation}")
-
-chat()
