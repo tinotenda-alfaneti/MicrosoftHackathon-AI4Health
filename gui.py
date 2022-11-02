@@ -1,9 +1,10 @@
-from Tkinter import *
+from tkinter import *
 from chat_bot import *
  
 # GUI
 root = Tk()
 root.title("Automate Health Chatbot")
+root.geometry("900x800")
  
 BG_GRAY = "#ABB2B9"
 BG_COLOR = "#17202A"
@@ -37,20 +38,22 @@ def chat():
     results = model.predict([bag_of_words(inp, words)])
     results_index = numpy.argmax(results)
     tag = labels[results_index]
-    centre_recommendation = ""
+    centre_recommendation = []
     for tg in data["DiseaseSymptom"]:
         if tg['Disease'] == tag:
             responses = tg['Response']
 
     for centre, diseases in disease_facility.items():
         if tag in diseases:
-            centre_recommendation = centre
-            break
-
-    txt.insert(END, "\nAI: " + random.choice(responses) + "\n\tThe facility we are recommending for you is " + centre_recommendation)
-    # if centre_recommendation != "":
-    #     print(f"The facility we are recommending for you is {centre_recommendation}")
- 
+            centre_recommendation.append(centre)
+        if len(centre_recommendation) > 3:
+            break;
+    
+    if len(centre_recommendation) == 0:
+        txt.insert(END, "\nAI -> Sorry, we don't have facilities that can help you in Upper East Region.")
+    else:       
+        txt.insert(END, "\nAI -> Here are the facilities we are recommending for you:\n " + ",".join(centre_recommendation))
+   
     e.delete(0, END)
  
  
