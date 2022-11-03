@@ -1,17 +1,22 @@
 from tkinter import *
 from chat_bot import *
+from PIL import Image, ImageTk
  
 # GUI
 root = Tk()
 root.title("Automate Health Chatbot")
-root.geometry("900x800")
+root.geometry("800x700")
+ico = Image.open('mdoc-logo.png')
+photo = ImageTk.PhotoImage(ico)
+root.wm_iconphoto(False, photo)
+root.config(padx=15, pady=15)
  
 BG_GRAY = "#ABB2B9"
 BG_COLOR = "#17202A"
 TEXT_COLOR = "#EAECEE"
  
-FONT = "Helvetica 14"
-FONT_BOLD = "Helvetica 13 bold"
+FONT = "century 14"
+FONT_BOLD = "century 13 bold"
  
 # Send function 
 def bag_of_words(s, words):
@@ -34,6 +39,24 @@ def chat():
  
     inp = e.get().lower()
 
+    if inp.lower() in ("exit", "bye", "end", "quit", "clear"):
+        txt.delete("1.0", "end")
+        txt.insert(END, "Goodbye. I hope I managed to be of help to you.\n\n")
+        e.delete(0, END)
+        return
+
+
+    if inp.lower() in ("hello", "hi", "hie", "sup", "greetings"):
+        txt.insert(END, "\n\nHello, I am your health assistant.\nPlease type the symptoms you are having.\n\n")
+        e.delete(0, END)
+        return
+
+    if inp.lower() in ("", " ") or inp.isdigit() or len(inp) <= 3:
+        txt.insert(END, "\n\nSorry I did not get the symptoms you entered.\n\n")
+        e.delete(0, END)
+        return
+
+
 
     results = model.predict([bag_of_words(inp, words)])
     results_index = numpy.argmax(results)
@@ -50,24 +73,26 @@ def chat():
             break;
     
     if len(centre_recommendation) == 0:
-        txt.insert(END, "\nAI -> Sorry, we don't have facilities that can help you in Upper East Region.")
+        txt.insert(END, "\n\nSorry, we don't have facilities that can help you in Upper East Region.\n\n")
     else:       
-        txt.insert(END, "\nAI -> Here are the facilities we are recommending for you:\n " + ",".join(centre_recommendation))
+        txt.insert(END, "\n\nHere are the facilities we are recommending for you: " + ",".join(centre_recommendation) + "\n\n")
    
     e.delete(0, END)
  
  
-lable1 = Label(root, bg=BG_COLOR, fg=TEXT_COLOR, text="Welcome", font=FONT_BOLD, pady=10, width=20, height=1).grid(
-    row=0)
+lable1 = Label(root, fg="black", text="Welcome to AutomateHealth's chatbot demo", font=FONT_BOLD, width=60, height=1).grid(
+    row=0, column=0, columnspan=2, pady=5)
  
-txt = Text(root, bg=BG_COLOR, fg=TEXT_COLOR, font=FONT, width=60)
+txt = Text(root, bg="black", fg="green", font=FONT, width=70)
 txt.grid(row=1, column=0, columnspan=2)
+txt.insert(END, "Hello, I am your health assistant.\nPlease type the symptoms you are having.\n\n")
  
-scrollbar = Scrollbar(txt)
-scrollbar.place(relheight=1, relx=0.974)
+# scrollbar = Scrollbar(txt)
+# scrollbar.place(relheight=1, relx=0.974)
  
-e = Entry(root, bg="#2C3E50", fg=TEXT_COLOR, font=FONT, width=55)
+e = Entry(root, bg="black", fg="white", font=FONT, width=65)
 e.grid(row=2, column=0)
+e.insert(0, 'Enter your symptoms here')
  
 send = Button(root, text="Send", font=FONT_BOLD, bg=BG_GRAY,
               command=chat).grid(row=2, column=1)
